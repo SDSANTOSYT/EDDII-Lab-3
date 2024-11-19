@@ -5,21 +5,22 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Worker {
+public class Worker1 {
 
 
     public static void main(String[] args) {
         try {
-            ServerSocket server = new ServerSocket(5000);
+            ServerSocket server = new ServerSocket(5001);
             while (true) {
                 Socket socket = server.accept();
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                 Socket client = (Socket) in.readObject();
                 int maxTime = (int) in.readInt();
-                new Thread(new WorkerManager(client, 0, "localhost", 5001, maxTime)).start();
+                new Thread(new WorkerManager(client, 1, "localhost", 5000, maxTime)).start();
             }
         } catch (Exception e) {
 
         }
     }
+
 }
