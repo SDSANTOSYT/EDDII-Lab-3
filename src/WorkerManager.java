@@ -10,7 +10,7 @@ public class WorkerManager implements Runnable {
     private final int workerId;
     private final String nextWorkerHost;
     private final int nextWorkerPort;
-    private int maxTime;
+    private float maxTime;
     private final String clientHost="localhost";
     private final int clientPort=5002;
 
@@ -26,15 +26,16 @@ public class WorkerManager implements Runnable {
     public void run() {
         try {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            int op= in.readInt();
+            int op = in.readInt();
+            System.out.println(op);
             int[] array = (int[]) in.readObject();
-            this.maxTime = in.readInt();
+            this.maxTime = in.readFloat();
+            System.out.println(maxTime);
             boolean isSorted = in.readBoolean();
 
             System.out.println("Trabajador " + workerId + " - Comenzará a ordenar");
 
             if (!isSorted) {
-                long startTime = System.currentTimeMillis();
                 Thread sortingThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -54,8 +55,9 @@ public class WorkerManager implements Runnable {
                         }
                     }
                 });
+                long startTime = System.currentTimeMillis();
                 sortingThread.start();
-                sortingThread.join(this.maxTime * 1000L);
+                sortingThread.join((long) (this.maxTime * 1000));
 
                 if (sortingThread.isAlive()) {
                     sortingThread.interrupt();
@@ -69,7 +71,7 @@ public class WorkerManager implements Runnable {
                     Socket nextWorkerSocket = new Socket(nextWorkerHost, nextWorkerPort);
                     ObjectOutputStream outNextWorker = new ObjectOutputStream(nextWorkerSocket.getOutputStream());
                     outNextWorker.writeObject(array);
-                    outNextWorker.writeInt(this.maxTime);
+                    outNextWorker.writeFloat(this.maxTime);
                     outNextWorker.writeBoolean(false);
                     outNextWorker.flush();
 
