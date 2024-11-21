@@ -37,15 +37,13 @@ public class Sorter {
             } else {
                 v[k++] = right[j++];
             }
-            //copia los otros datos del vector para unirlos de nuevo
-            while (i < limLeft) {
-                v[k++] = left[i++];
-
-            }
-            while (j < limRight) {
-                v[k++] = right[j++];
-            }
-
+        }
+        //copia los otros datos del vector para unirlos de nuevo
+        while (i < limLeft) {
+            v[k++] = left[i++];
+        }
+        while (j < limRight) {
+            v[k++] = right[j++];
         }
     }
 
