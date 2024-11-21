@@ -106,7 +106,7 @@ public class Sorter {
 
         //Itera sobre los elementos de la sublista
         for (int j = low; j < high; j++) {
-            if (v[j] < pivot) {
+            if (v[j] <= pivot) {
                 //Si el elemento actual es menor o igual al pivote, incremento el indice menor
                 i++;
                 //Intercambia el elemento actual con el elemento en la posicion i
@@ -116,8 +116,8 @@ public class Sorter {
             }
         }
         //Pivote en la posicion correcta :D
-        int temp = v[i];
-        v[i] = v[high];
+        int temp = v[i+1];
+        v[i+1] = v[high];
         v[high] = temp;
         return i+1; //Posicion final del pivote
 
@@ -126,8 +126,13 @@ public class Sorter {
         if (low < high) {
             //Verifica si la posicion del array tiene mas de un elemento
             int pivot = partition(v, low, high);
-            Aux(v, low, pivot - 1); //Ordena los elemento a la izquierda del pivote
-            Aux(v, pivot + 1, high);//Ordena los elementos a la derecha del pivote
+            if (pivot - low < high - pivot) {
+                Aux(v, low, pivot - 1);
+                low = pivot + 1;
+            }else{
+                Aux(v, pivot +1, high);
+                high = pivot - 1;
+            }
         }
     }
 
