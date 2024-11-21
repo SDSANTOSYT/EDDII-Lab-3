@@ -99,5 +99,40 @@ public class Sorter {
    }
 
    //QuickSort
+    private int partition(int[] v, int low, int high) {
+        //Ultimo elemento como pivote
+        int pivot = v[low];
+        int i = low-1;
 
+        //Itera sobre los elementos de la sublista
+        for (int j = low; j < high; j++) {
+            if (v[j] < pivot) {
+                //Si el elemento actual es menor o igual al pivote, incremento el indice menor
+                i++;
+                //Intercambia el elemento actual con el elemento en la posicion i
+                int temp = v[i];
+                v[i] = v[j];
+                v[j] = temp;
+            }
+        }
+        //Pivote en la posicion correcta :D
+        int temp = v[i];
+        v[i] = v[high];
+        v[high] = temp;
+        return i+1; //Posicion final del pivote
+
+    }
+    public void Aux(int []v, int low, int high) {
+        if (low < high) {
+            //Verifica si la posicion del array tiene mas de un elemento
+            int pivot = partition(v, low, high);
+            Aux(v, low, pivot - 1); //Ordena los elemento a la izquierda del pivote
+            Aux(v, pivot + 1, high);//Ordena los elementos a la derecha del pivote
+        }
+    }
+
+    public int[] quickSort(int[] v) {
+        Aux(v, 0, v.length - 1);
+        return v;
+    }
 }
