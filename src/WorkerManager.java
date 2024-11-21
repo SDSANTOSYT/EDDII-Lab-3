@@ -70,6 +70,7 @@ public class WorkerManager implements Runnable {
 
                     Socket nextWorkerSocket = new Socket(nextWorkerHost, nextWorkerPort);
                     ObjectOutputStream outNextWorker = new ObjectOutputStream(nextWorkerSocket.getOutputStream());
+                    outNextWorker.writeInt(op);
                     outNextWorker.writeObject(array);
                     outNextWorker.writeFloat(this.maxTime);
                     outNextWorker.writeBoolean(false);
