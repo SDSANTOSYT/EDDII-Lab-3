@@ -11,6 +11,8 @@ public class WorkerManager implements Runnable {
     private final String nextWorkerHost;
     private final int nextWorkerPort;
     private int maxTime;
+    private final String clientHost="localhost";
+    private final int clientPort=5002;
 
     public WorkerManager(Socket socket, int workerId, String nextWorkerHost, int nextWorkerPort) {
         this.socket = socket;
@@ -24,6 +26,7 @@ public class WorkerManager implements Runnable {
     public void run() {
         try {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            int op= in.readInt();
             int[] array = (int[]) in.readObject();
             this.maxTime = in.readInt();
             boolean isSorted = in.readBoolean();
@@ -35,6 +38,20 @@ public class WorkerManager implements Runnable {
                 Thread sortingThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        switch (op) {
+                            case 1:
+                                Sorter.mergeSort(array, array.length);
+                                break;
+                            case 2:
+                                Sorter.quickSort(array);
+                                break;
+                            case 3:
+                                Sorter.heapsort(array);
+                                break;
+                            default:
+                                System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
+                                break;
+                        }
                         sort(array);
                     }
                 });
@@ -42,9 +59,13 @@ public class WorkerManager implements Runnable {
                 sortingThread.join(this.maxTime * 1000L);
 
                 if (sortingThread.isAlive()) {
-                    System.out.println("No se terminó de ordenar");
                     sortingThread.interrupt();
                     System.out.println("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
+                    Socket clientSocket = new Socket(clientHost, clientPort);
+                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+                    out.writeObject("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
+                    out.flush();
+                    clientSocket.close();
 
                     Socket nextWorkerSocket = new Socket(nextWorkerHost, nextWorkerPort);
                     ObjectOutputStream outNextWorker = new ObjectOutputStream(nextWorkerSocket.getOutputStream());
@@ -58,8 +79,8 @@ public class WorkerManager implements Runnable {
                     long endTime = System.currentTimeMillis();
                     System.out.println("Trabajador " + workerId + " - Completó el ordenamiento");
 
-                    SortingResult sortingResult = new SortingResult(array, workerId, (int) ((endTime - startTime) / 1000));
-                    Socket clientSocket = new Socket("localhost", 5002);
+                    SortingResult sortingResult = new SortingResult(array, workerId, (float) ((endTime - startTime) / 1000));
+                    Socket clientSocket = new Socket(clientHost, clientPort);
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                     out.writeObject(sortingResult);
                     out.flush();
@@ -85,9 +106,9 @@ public class WorkerManager implements Runnable {
 class SortingResult implements Serializable {
     int[] vector;
     int workerId;
-    int lasted;
+    float lasted;
 
-    public SortingResult(int[] vector, int workerId, int lasted) {
+    public SortingResult(int[] vector, int workerId, float lasted) {
         this.vector = vector;
         this.workerId = workerId;
         this.lasted = lasted;

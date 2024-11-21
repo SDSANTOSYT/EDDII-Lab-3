@@ -50,7 +50,7 @@ public class Sorter {
     }
 
    //HeapSort
-   public void heapsort(int[] v){
+   public static void heapsort(int[] v){
         int n = v.length;
         //Contruyamos un heap :D
         for (int i = n/2 -1; i >= 0; i--) {
@@ -67,7 +67,7 @@ public class Sorter {
         }
    }
     //Aqui construimos el heap
-   void heapify(int[] v, int n, int i) {
+    static void  heapify(int[] v, int n, int i) {
         int largest = i; //Nodo mas grande como raiz
         int l = 2*i + 1; // izquierda
         int r = 2*i + 2; // derecha
@@ -99,7 +99,7 @@ public class Sorter {
    }
 
    //QuickSort
-    private int partition(int[] v, int low, int high) {
+    private  static int partition(int[] v, int low, int high) {
         //Ultimo elemento como pivote
         int pivot = v[low];
         int i = low-1;
@@ -122,7 +122,7 @@ public class Sorter {
         return i+1; //Posicion final del pivote
 
     }
-    public void Aux(int []v, int low, int high) {
+    public static void Aux(int []v, int low, int high) {
         if (low < high) {
             //Verifica si la posicion del array tiene mas de un elemento
             int pivot = partition(v, low, high);
@@ -131,8 +131,7 @@ public class Sorter {
         }
     }
 
-    public int[] quickSort(int[] v) {
+    public static void quickSort(int[] v) {
         Aux(v, 0, v.length - 1);
-        return v;
     }
 }
