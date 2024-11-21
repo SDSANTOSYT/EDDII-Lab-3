@@ -9,6 +9,7 @@ public class Worker {
         try {
             // se crea el socket del servidor
             ServerSocket server = new ServerSocket(5000);
+            System.out.println("Worker#0 Iniciado");
             while (true) {
                 // se esperan las conexiones ya sea del cliente o del otro worker
                 Socket socket = server.accept();

@@ -17,7 +17,7 @@ public class Client {
             float maxTime = input.nextFloat();
             int op=0;
             
-            while (op>3 && op<1) {
+            while (op>3 || op<1) {
                 try {
                     System.out.println("Ingrese como quiere organizar el vector\n MergeSort (1), QuickSort (2) HeapSort (3)");
                         op=input.nextInt();

@@ -52,7 +52,6 @@ public class WorkerManager implements Runnable {
                                 System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
                                 break;
                         }
-                        sort(array);
                     }
                 });
                 sortingThread.start();
