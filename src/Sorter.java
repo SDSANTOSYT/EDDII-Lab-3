@@ -99,7 +99,7 @@ public class Sorter {
    //QuickSort
     private  static int partition(int[] v, int low, int high) {
         //Ultimo elemento como pivote
-        int pivot = v[low];
+        int pivot = v[high];
         int i = low-1;
 
         //Itera sobre los elementos de la sublista
@@ -124,13 +124,8 @@ public class Sorter {
         if (low < high) {
             //Verifica si la posicion del array tiene mas de un elemento
             int pivot = partition(v, low, high);
-            if (pivot - low < high - pivot) {
-                Aux(v, low, pivot - 1);
-                low = pivot + 1;
-            }else{
-                Aux(v, pivot +1, high);
-                high = pivot - 1;
-            }
+            Aux(v,low,pivot-1);
+            Aux(v,pivot+1,high);
         }
     }
 
