@@ -57,7 +57,7 @@ public class Client {
                 } else if (object instanceof SortingResult) {
                     // Si el objeto es el resultado del ordenamiento, se guarda el vector en un archivo y se muestra el tiempo de ejecución
                     SortingResult results = (SortingResult) object;
-                    writeArray("vectorOrdenado.txt", results.vector);
+                    writeArray("src/vectorOrdenado.txt", results.vector);
                     System.out.println("El vector fue ordenado por el trabajador #" + results.workerId + " en " + results.lasted + " segundos");
                     break;
                 }

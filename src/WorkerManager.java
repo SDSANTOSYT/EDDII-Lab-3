@@ -27,13 +27,17 @@ public class WorkerManager implements Runnable {
         try {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             int op = in.readInt();
-            System.out.println(op);
+            //System.out.println(op);
             int[] array = (int[]) in.readObject();
+            int[] startArray = new int[array.length];
+            for (int i = 0; i < array.length; i++) {
+                startArray[i] = array[i];
+            }
             this.maxTime = in.readFloat();
-            System.out.println(maxTime);
+            //System.out.println(maxTime);
             boolean isSorted = in.readBoolean();
 
-            System.out.println("Trabajador " + workerId + " - Comenzará a ordenar");
+            //System.out.println("Trabajador " + workerId + " - Comenzará a ordenar");
 
             if (!isSorted) {
                 Thread sortingThread = new Thread(new Runnable() {
@@ -61,7 +65,8 @@ public class WorkerManager implements Runnable {
 
                 if (sortingThread.isAlive()) {
                     sortingThread.interrupt();
-                    System.out.println("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
+                    System.out.println(Sorter.didArrayChange(array,startArray));
+                    //System.out.println("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
                     Socket clientSocket = new Socket(clientHost, clientPort);
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                     out.writeObject("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
@@ -79,13 +84,14 @@ public class WorkerManager implements Runnable {
                     nextWorkerSocket.close();
                 } else {
                     long endTime = System.currentTimeMillis();
-                    System.out.println("Trabajador " + workerId + " - Completó el ordenamiento");
+                    //System.out.println("Trabajador " + workerId + " - Completó el ordenamiento");
 
-                    SortingResult sortingResult = new SortingResult(array, workerId, (float) ((endTime - startTime) / 1000));
+                    SortingResult sortingResult = new SortingResult(array, workerId, (float) ((endTime - startTime) / 1000.0));
                     Socket clientSocket = new Socket(clientHost, clientPort);
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                     out.writeObject(sortingResult);
                     out.flush();
+
                 }
 
             }

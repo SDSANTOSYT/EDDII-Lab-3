@@ -13,12 +13,13 @@ public class Worker {
             while (true) {
                 // se esperan las conexiones ya sea del cliente o del otro worker
                 Socket socket = server.accept();
-                System.out.println("Se conectó el cliente");
+                //System.out.println("Se conectó el cliente");
                 new Thread(new WorkerManager(socket, 0, "localhost", 5001)).start();
             }
         } catch (Exception e) {
             System.out.println("falló en algo");
             e.printStackTrace();
         }
+
     }
 }
