@@ -10,15 +10,16 @@ public class WorkerManager implements Runnable {
     private final int workerId;
     private final String nextWorkerHost;
     private final int nextWorkerPort;
-    private float maxTime;
-    private final String clientHost="localhost";
-    private final int clientPort=5002;
+    private final String clientHost = "localhost";
+    private final int clientPort = 5002;
+    private SortingState state;
 
     public WorkerManager(Socket socket, int workerId, String nextWorkerHost, int nextWorkerPort) {
         this.socket = socket;
         this.workerId = workerId;
         this.nextWorkerHost = nextWorkerHost;
         this.nextWorkerPort = nextWorkerPort;
+        this.state = null;
     }
 
 
@@ -26,32 +27,41 @@ public class WorkerManager implements Runnable {
     public void run() {
         try {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            int op = in.readInt();
-            //System.out.println(op);
-            int[] array = (int[]) in.readObject();
-            int[] startArray = new int[array.length];
-            for (int i = 0; i < array.length; i++) {
-                startArray[i] = array[i];
+
+            Object object = in.readObject();
+            if (object instanceof SortingState) {
+                this.state = (SortingState) object;
+            } else {
+                int[] vector = (int[]) object;
+                int sortingMethod = in.readInt();
+                //System.out.println(op);
+                float maxTime = in.readFloat();
+                //System.out.println(maxTime);
+                boolean isSorted = in.readBoolean();
+                this.state = new SortingState(vector, sortingMethod, maxTime);
+
             }
-            this.maxTime = in.readFloat();
-            //System.out.println(maxTime);
-            boolean isSorted = in.readBoolean();
+            int[] startArray = new int[this.state.vector.length];
+            for (int i = 0; i < this.state.vector.length; i++) {
+                startArray[i] = this.state.vector[i];
+            }
+
 
             //System.out.println("Trabajador " + workerId + " - Comenzará a ordenar");
 
-            if (!isSorted) {
+            if (!this.state.isSorted) {
                 Thread sortingThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        switch (op) {
+                        switch (state.sortingMethod) {
                             case 1:
-                                Sorter.mergeSorts(array, array.length);
+                                Sorter.mergeSort(state.vector, state.mergeSortState);
                                 break;
                             case 2:
-                                Sorter.quickSort(array);
+                                Sorter.quickSort(state.vector);
                                 break;
                             case 3:
-                                Sorter.heapsort(array);
+                                Sorter.heapsort(state.vector);
                                 break;
                             default:
                                 System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
@@ -61,11 +71,11 @@ public class WorkerManager implements Runnable {
                 });
                 long startTime = System.currentTimeMillis();
                 sortingThread.start();
-                sortingThread.join((long) (this.maxTime * 1000));
+                sortingThread.join((long) (this.state.maxTime * 1000));
 
                 if (sortingThread.isAlive()) {
                     sortingThread.interrupt();
-                    System.out.println(Sorter.didArrayChange(array,startArray));
+                    //System.out.println(Sorter.didArrayChange(this.state.vector, startArray));
                     //System.out.println("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
                     Socket clientSocket = new Socket(clientHost, clientPort);
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -75,18 +85,17 @@ public class WorkerManager implements Runnable {
 
                     Socket nextWorkerSocket = new Socket(nextWorkerHost, nextWorkerPort);
                     ObjectOutputStream outNextWorker = new ObjectOutputStream(nextWorkerSocket.getOutputStream());
-                    outNextWorker.writeInt(op);
-                    outNextWorker.writeObject(array);
-                    outNextWorker.writeFloat(this.maxTime);
-                    outNextWorker.writeBoolean(false);
+                    outNextWorker.writeObject(this.state);
                     outNextWorker.flush();
 
                     nextWorkerSocket.close();
                 } else {
+                    Arrays.sort(startArray);
+                    System.out.println(Sorter.didArrayChange(this.state.vector, startArray));
                     long endTime = System.currentTimeMillis();
                     //System.out.println("Trabajador " + workerId + " - Completó el ordenamiento");
 
-                    SortingResult sortingResult = new SortingResult(array, workerId, (float) ((endTime - startTime) / 1000.0));
+                    SortingResult sortingResult = new SortingResult(this.state.vector, workerId, (float) ((endTime - startTime) / 1000.0));
                     Socket clientSocket = new Socket(clientHost, clientPort);
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                     out.writeObject(sortingResult);
@@ -121,4 +130,21 @@ class SortingResult implements Serializable {
         this.workerId = workerId;
         this.lasted = lasted;
     }
+}
+
+class SortingState implements Serializable {
+    int[] vector;
+    int sortingMethod;
+    float maxTime;
+    boolean isSorted;
+    Sorter.MergeSortState mergeSortState;
+
+    public SortingState(int[] vector, int sortingMethod, float maxTime) {
+        this.vector = vector;
+        this.sortingMethod = sortingMethod;
+        this.maxTime = maxTime;
+        this.isSorted = false;
+        mergeSortState = new Sorter.MergeSortState(this.vector.length);
+    }
+
 }

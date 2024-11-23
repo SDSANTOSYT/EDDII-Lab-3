@@ -1,9 +1,10 @@
+import java.io.Serializable;
 import java.util.Stack;
 
 public class Sorter {
 
     // Clase para representar el estado del algoritmo
-    public static class MergeSortState {
+    public static class MergeSortState implements Serializable {
         Stack<CallState> stateStack; // Pila para simular la recursión
 
         public MergeSortState(int arrayLength) {
@@ -13,7 +14,7 @@ public class Sorter {
     }
 
     // Clase para representar una llamada en la pila
-    private static class CallState {
+    private static class CallState implements Serializable {
         int left, right;
         boolean mergeDone;
         int mid;
@@ -27,30 +28,30 @@ public class Sorter {
     }
 
     //MergeSort
-    public static void mergeSorts(int[] v, int n) {
-        //caso base arreglo es nada nas 1 dato
-        if (n < 2) {
-            return;
-        }
-        //encuentra el punto medio para hacer la subdivisión
-        int mid = n / 2;
-        //creacion de los arreglod temporales para divirlos
-        int[] left = new int[mid];
-        int[] right = new int[n - mid];
-        //dividiendo la mitad izquierda y la mitad derecha
-        for (int i = 0; i < mid; i++) {
-            left[i] = v[i];
-        }
-        for (int i = mid; i < n; i++) {
-            right[i - mid] = v[i];
-        }
-        //llamado recursivo a la función
-        mergeSorts(left, mid);
-        mergeSorts(right, n - mid);
-        //llamado a la funcion merge para volver a unir los arreglos
-        merges(v, left, right, mid, n - mid);
-
-    }
+//    public static void mergeSorts(int[] v, int n) {
+//        //caso base arreglo es nada nas 1 dato
+//        if (n < 2) {
+//            return;
+//        }
+//        //encuentra el punto medio para hacer la subdivisión
+//        int mid = n / 2;
+//        //creacion de los arreglod temporales para divirlos
+//        int[] left = new int[mid];
+//        int[] right = new int[n - mid];
+//        //dividiendo la mitad izquierda y la mitad derecha
+//        for (int i = 0; i < mid; i++) {
+//            left[i] = v[i];
+//        }
+//        for (int i = mid; i < n; i++) {
+//            right[i - mid] = v[i];
+//        }
+//        //llamado recursivo a la función
+//        mergeSorts(left, mid);
+//        mergeSorts(right, n - mid);
+//        //llamado a la funcion merge para volver a unir los arreglos
+//        merges(v, left, right, mid, n - mid);
+//
+//    }
     public static void mergeSort(int[] array, MergeSortState state) {
         while (!state.stateStack.isEmpty()) {
             CallState current = state.stateStack.pop();
@@ -104,25 +105,25 @@ public class Sorter {
 
 
     //creación de la funcion merge para combinar los vectores temporales
-    public static void merges(int[] v, int[] left, int[] right, int limLeft, int limRight) {
-        int i = 0, j = 0, k = 0;
-
-        while (i < limLeft && j < limRight) {
-            //ordena los datos en orden ascendente y lo posiciona en el vector original
-            if (left[i] <= right[j]) {
-                v[k++] = left[i++];
-            } else {
-                v[k++] = right[j++];
-            }
-        }
-        //copia los otros datos del vector para unirlos de nuevo
-        while (i < limLeft) {
-            v[k++] = left[i++];
-        }
-        while (j < limRight) {
-            v[k++] = right[j++];
-        }
-    }
+//    public static void merges(int[] v, int[] left, int[] right, int limLeft, int limRight) {
+//        int i = 0, j = 0, k = 0;
+//
+//        while (i < limLeft && j < limRight) {
+//            //ordena los datos en orden ascendente y lo posiciona en el vector original
+//            if (left[i] <= right[j]) {
+//                v[k++] = left[i++];
+//            } else {
+//                v[k++] = right[j++];
+//            }
+//        }
+//        //copia los otros datos del vector para unirlos de nuevo
+//        while (i < limLeft) {
+//            v[k++] = left[i++];
+//        }
+//        while (j < limRight) {
+//            v[k++] = right[j++];
+//        }
+//    }
 
     //HeapSort
     public static void heapsort(int[] v) {

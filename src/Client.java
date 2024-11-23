@@ -35,8 +35,8 @@ public class Client {
 
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-            out.writeInt(op);//Se envia la opción
             out.writeObject(array); // se envia el vector
+            out.writeInt(op);//Se envia la opción
             out.writeFloat(maxTime); // se envia el tiempo limite para resolver el problema
             out.writeBoolean(false); // se envia un booleano que indica el estado del vector
             out.flush();
@@ -57,7 +57,7 @@ public class Client {
                 } else if (object instanceof SortingResult) {
                     // Si el objeto es el resultado del ordenamiento, se guarda el vector en un archivo y se muestra el tiempo de ejecución
                     SortingResult results = (SortingResult) object;
-                    writeArray("src/vectorOrdenado.txt", results.vector);
+                    writeArray("vectorOrdenado.txt", results.vector);
                     System.out.println("El vector fue ordenado por el trabajador #" + results.workerId + " en " + results.lasted + " segundos");
                     break;
                 }
