@@ -124,60 +124,61 @@ public class Sorter {
         }
     }
 
-   //HeapSort
-   public static void heapsort(int[] v){
+    //HeapSort
+    public static void heapsort(int[] v) {
         int n = v.length;
         //Contruyamos un heap :D
-        for (int i = n/2 -1; i >= 0; i--) {
-            heapify(v,n,i);
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            heapify(v, n, i);
         }
         //Extraer elementos del heap uno por uno
-        for (int i = n-1; i >= 0; i--) {
+        for (int i = n - 1; i >= 0; i--) {
             //Mover la raiz actual al final
             int temp = v[0];
             v[0] = v[i];
             v[i] = temp;
 
-            heapify(v,i,0);
+            heapify(v, i, 0);
         }
-   }
-    //Aqui construimos el heap
-    static void  heapify(int[] v, int n, int i) {
-        int largest = i; //Nodo mas grande como raiz
-        int l = 2*i + 1; // izquierda
-        int r = 2*i + 2; // derecha
+    }
 
-       //Si el hijo izquierdo es mas grande que la raiz
-        if(l<n && v[l]>v[largest]){
+    //Aqui construimos el heap
+    static void heapify(int[] v, int n, int i) {
+        int largest = i; //Nodo mas grande como raiz
+        int l = 2 * i + 1; // izquierda
+        int r = 2 * i + 2; // derecha
+
+        //Si el hijo izquierdo es mas grande que la raiz
+        if (l < n && v[l] > v[largest]) {
             largest = l;
         }
         //Si el hijo derecho es mas grande que el nodo mas grande hasta ahora
-        if(r<n && v[r]>v[largest]){
+        if (r < n && v[r] > v[largest]) {
             largest = r;
         }
 
         //Si el nodo mas grande no es la raiz
-        if(largest != i){
+        if (largest != i) {
             int swap = v[i];
             v[i] = v[largest];
             v[largest] = swap;
 
-            heapify(v,n,largest);
+            heapify(v, n, largest);
         }
-   }
+    }
 
-   static void printArray(int[] v){
+    static void printArray(int[] v) {
         int n = v.length;
         for (int i = 0; i < n; i++) {
-            System.out.print(v[i]+" ");
+            System.out.print(v[i] + " ");
         }
-   }
+    }
 
-   //QuickSort
-    private  static int partition(int[] v, int low, int high) {
+    //QuickSort
+    private static int partition(int[] v, int low, int high) {
         //Ultimo elemento como pivote
         int pivot = v[high];
-        int i = low-1;
+        int i = low - 1;
 
         //Itera sobre los elementos de la sublista
         for (int j = low; j < high; j++) {
@@ -191,22 +192,32 @@ public class Sorter {
             }
         }
         //Pivote en la posicion correcta :D
-        int temp = v[i+1];
-        v[i+1] = v[high];
+        int temp = v[i + 1];
+        v[i + 1] = v[high];
         v[high] = temp;
-        return i+1; //Posicion final del pivote
+        return i + 1; //Posicion final del pivote
 
     }
-    public static void Aux(int []v, int low, int high) {
+
+    public static void Aux(int[] v, int low, int high) {
         if (low < high) {
             //Verifica si la posicion del array tiene mas de un elemento
             int pivot = partition(v, low, high);
-            Aux(v,low,pivot-1);
-            Aux(v,pivot+1,high);
+            Aux(v, low, pivot - 1);
+            Aux(v, pivot + 1, high);
         }
     }
 
     public static void quickSort(int[] v) {
         Aux(v, 0, v.length - 1);
+    }
+
+    public static boolean didArrayChange(int[] v1, int[] v2) {
+        for (int i = 0; i < v1.length; i++) {
+            if (v2[i] != v1[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 }
