@@ -28,34 +28,12 @@ public class Sorter {
     }
 
     //MergeSort
-//    public static void mergeSorts(int[] v, int n) {
-//        //caso base arreglo es nada nas 1 dato
-//        if (n < 2) {
-//            return;
-//        }
-//        //encuentra el punto medio para hacer la subdivisión
-//        int mid = n / 2;
-//        //creacion de los arreglod temporales para divirlos
-//        int[] left = new int[mid];
-//        int[] right = new int[n - mid];
-//        //dividiendo la mitad izquierda y la mitad derecha
-//        for (int i = 0; i < mid; i++) {
-//            left[i] = v[i];
-//        }
-//        for (int i = mid; i < n; i++) {
-//            right[i - mid] = v[i];
-//        }
-//        //llamado recursivo a la función
-//        mergeSorts(left, mid);
-//        mergeSorts(right, n - mid);
-//        //llamado a la funcion merge para volver a unir los arreglos
-//        merges(v, left, right, mid, n - mid);
-//
-//    }
-    public static void mergeSort(int[] array, MergeSortState state, float maxTime) {
-        float startTime = System.currentTimeMillis();
+    public static boolean mergeSort(int[] array, MergeSortState state, float maxTime) {
+        long startTime = System.currentTimeMillis();
         while (!state.stateStack.isEmpty()) {
-            if ((System.currentTimeMillis()-startTime)/1000.0==maxTime){
+            if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
+                return false;
+            } else {
                 CallState current = state.stateStack.pop();
 
                 if (!current.mergeDone) {
@@ -71,14 +49,12 @@ public class Sorter {
                     // Fusionar las dos mitades
                     merge(array, current.left, current.mid, current.right);
                 }
-
-
-            }else{
-                break;
             }
 
         }
+        return true;
     }
+
     // Método de fusión
     private static void merge(int[] array, int left, int mid, int right) {
         int n1 = mid - left + 1;
@@ -108,30 +84,6 @@ public class Sorter {
             array[k++] = R[j++];
         }
     }
-
-
-
-
-    //creación de la funcion merge para combinar los vectores temporales
-//    public static void merges(int[] v, int[] left, int[] right, int limLeft, int limRight) {
-//        int i = 0, j = 0, k = 0;
-//
-//        while (i < limLeft && j < limRight) {
-//            //ordena los datos en orden ascendente y lo posiciona en el vector original
-//            if (left[i] <= right[j]) {
-//                v[k++] = left[i++];
-//            } else {
-//                v[k++] = right[j++];
-//            }
-//        }
-//        //copia los otros datos del vector para unirlos de nuevo
-//        while (i < limLeft) {
-//            v[k++] = left[i++];
-//        }
-//        while (j < limRight) {
-//            v[k++] = right[j++];
-//        }
-//    }
 
     //HeapSort
     public static void heapsort(int[] v) {

@@ -50,31 +50,26 @@ public class WorkerManager implements Runnable {
             //System.out.println("Trabajador " + workerId + " - Comenzará a ordenar");
 
             if (!this.state.isSorted) {
-                Thread sortingThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (state.sortingMethod) {
-                            case 1:
-                                Sorter.mergeSort(state.vector, state.mergeSortState);
-                                break;
-                            case 2:
-                                Sorter.quickSort(state.vector);
-                                break;
-                            case 3:
-                                Sorter.heapsort(state.vector);
-                                break;
-                            default:
-                                System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
-                                break;
-                        }
-                    }
-                });
-                long startTime = System.currentTimeMillis();
-                sortingThread.start();
-                sortingThread.join((long) (this.state.maxTime * 1000));
 
-                if (sortingThread.isAlive()) {
-                    sortingThread.interrupt();
+                long startTime = System.currentTimeMillis();
+                switch (state.sortingMethod) {
+                    case 1:
+                        state.isSorted = Sorter.mergeSort(state.vector, state.mergeSortState, this.state.maxTime);
+                        break;
+                    case 2:
+                        Sorter.quickSort(state.vector);
+                        break;
+                    case 3:
+                        Sorter.heapsort(state.vector);
+                        break;
+                    default:
+                        System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
+                        break;
+                }
+
+
+
+                if (!state.isSorted) {
                     //System.out.println(Sorter.didArrayChange(this.state.vector, startArray));
                     //System.out.println("Trabajador " + workerId + " - Tiempo excedido, enviando a siguiente trabajador");
                     Socket clientSocket = new Socket(clientHost, clientPort);
@@ -105,7 +100,8 @@ public class WorkerManager implements Runnable {
 
             }
             socket.close();
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
     }

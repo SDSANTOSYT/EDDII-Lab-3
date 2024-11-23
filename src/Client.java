@@ -15,19 +15,18 @@ public class Client {
             // Se lee el tiempo maximo para la ejecución del ordenamiento
             System.out.println("Ingresa el tiempo maximo para ordenar el vector");
             float maxTime = input.nextFloat();
-            int op=0;
-            
-            while (op>3 || op<1) {
+            int op = 0;
+
+            while (op > 3 || op < 1) {
                 try {
                     System.out.println("Ingrese como quiere organizar el vector\n MergeSort (1), QuickSort (2) HeapSort (3)");
-                        op=input.nextInt();
-                    
+                    op = input.nextInt();
+
                 } catch (Exception e) {
-                    op=0;
+                    op = 0;
                 }
-                
+
             }
-            
 
 
             // Se crea la conexión con el socket del worker#0
