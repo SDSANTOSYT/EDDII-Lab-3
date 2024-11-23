@@ -86,52 +86,77 @@ public class Sorter {
     }
 
     //HeapSort
-    public static void heapsort(int[] v) {
-        int n = v.length;
-        //Contruyamos un heap :D
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(v, n, i);
-        }
-        //Extraer elementos del heap uno por uno
-        for (int i = n - 1; i >= 0; i--) {
-            //Mover la raiz actual al final
-            int temp = v[0];
-            v[0] = v[i];
-            v[i] = temp;
+    static class HeapCallState{
+        int index; //Indice actual para heapify
+        int size;   //Tamaño del heap
+        boolean isExtractionPhase;  //Estamos en fase de extraccion?
+        boolean heapifyDone;    // La heapificacion esta completa?
 
-            heapify(v, i, 0);
+        HeapCallState(int index, int size, boolean isExtractionPhase, boolean heapifyDone) {
+          this.index = index;
+          this.size = size;
+          this.isExtractionPhase = isExtractionPhase;
+          this.heapifyDone = heapifyDone;
+        }
+    }
+    static class HeapSortState{
+        Stack<HeapCallState> stateStack = new Stack<>();
+        HeapSortState(int arrayLength) {
+            for(int i = arrayLength / 2 - 1; i>=0; i--){
+                stateStack.push(new HeapCallState(i,arrayLength,false,false));
+            }
+            for (int i = arrayLength - 1; i > 0; i--) {
+                stateStack.push(new HeapCallState(0,i+1,true,false));
+            }
         }
     }
 
-    //Aqui construimos el heap
-    static void heapify(int[] v, int n, int i) {
-        int largest = i; //Nodo mas grande como raiz
-        int l = 2 * i + 1; // izquierda
-        int r = 2 * i + 2; // derecha
+    public static boolean heapSort(int[] array, HeapSortState state, float maxTime) {
+       long startTime = System.currentTimeMillis();
 
-        //Si el hijo izquierdo es mas grande que la raiz
-        if (l < n && v[l] > v[largest]) {
-            largest = l;
-        }
-        //Si el hijo derecho es mas grande que el nodo mas grande hasta ahora
-        if (r < n && v[r] > v[largest]) {
-            largest = r;
-        }
+       while (!state.stateStack.isEmpty()) {
+           if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
+               return false;
+           }else{
+               HeapCallState current = state.stateStack.pop();
+               if (current.isExtractionPhase) {
+                   if(!current.heapifyDone){
+                       int finalIndex = current.size -1;
+                       int temp = array[0];
+                       array[0] = array[finalIndex];
+                       array[finalIndex] = temp;
 
-        //Si el nodo mas grande no es la raiz
-        if (largest != i) {
-            int swap = v[i];
-            v[i] = v[largest];
-            v[largest] = swap;
-
-            heapify(v, n, largest);
-        }
+                       heapify(array,0,finalIndex);
+                       current.heapifyDone = true;
+                   }
+               }else{
+                   if (!current.heapifyDone) {
+                       heapify(array, current.index, current.size);
+                       current.heapifyDone = true;
+                   }
+               }
+           }
+       }
+       return true;
     }
 
-    static void printArray(int[] v) {
-        int n = v.length;
-        for (int i = 0; i < n; i++) {
-            System.out.print(v[i] + " ");
+    public static void heapify(int[] array, int root, int heapSize){
+        int largest = root;
+        int left = 2 * root + 1;
+        int right = 2 * root + 2;
+
+        if(left < heapSize && array[left] > array[largest]){
+            largest = left;
+        }
+        if(right < heapSize && array[right] > array[largest]){
+            largest = right;
+        }
+        if(largest != root){
+            int temp = array[root];
+            array[root] = array[largest];
+            array[largest] = temp;
+
+            heapify(array, largest, heapSize);
         }
     }
 
