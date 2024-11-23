@@ -1,7 +1,33 @@
+import java.util.Stack;
+
 public class Sorter {
 
+    // Clase para representar el estado del algoritmo
+    public static class MergeSortState {
+        Stack<CallState> stateStack; // Pila para simular la recursión
+
+        public MergeSortState(int arrayLength) {
+            this.stateStack = new Stack<>();
+            this.stateStack.push(new CallState(0, arrayLength - 1, false)); // Estado inicial
+        }
+    }
+
+    // Clase para representar una llamada en la pila
+    private static class CallState {
+        int left, right;
+        boolean mergeDone;
+        int mid;
+
+        public CallState(int left, int right, boolean mergeDone) {
+            this.left = left;
+            this.right = right;
+            this.mergeDone = mergeDone;
+            this.mid = left + (right - left) / 2;
+        }
+    }
+
     //MergeSort
-    public static void mergeSort(int[] v, int n) {
+    public static void mergeSorts(int[] v, int n) {
         //caso base arreglo es nada nas 1 dato
         if (n < 2) {
             return;
@@ -19,15 +45,66 @@ public class Sorter {
             right[i - mid] = v[i];
         }
         //llamado recursivo a la función
-        mergeSort(left, mid);
-        mergeSort(right, n - mid);
+        mergeSorts(left, mid);
+        mergeSorts(right, n - mid);
         //llamado a la funcion merge para volver a unir los arreglos
-        merge(v, left, right, mid, n - mid);
+        merges(v, left, right, mid, n - mid);
 
     }
+    public static void mergeSort(int[] array, MergeSortState state) {
+        while (!state.stateStack.isEmpty()) {
+            CallState current = state.stateStack.pop();
+
+            if (!current.mergeDone) {
+                if (current.left < current.right) {
+                    int mid = current.mid;
+
+                    // Dividir: Agregar estados a la pila
+                    state.stateStack.push(new CallState(current.left, current.right, true)); // Para fusión
+                    state.stateStack.push(new CallState(mid + 1, current.right, false));     // Derecha
+                    state.stateStack.push(new CallState(current.left, mid, false));         // Izquierda
+                }
+            } else {
+                // Fusionar las dos mitades
+                merge(array, current.left, current.mid, current.right);
+            }
+        }
+    }
+    // Método de fusión
+    private static void merge(int[] array, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+
+        System.arraycopy(array, left, L, 0, n1);
+        System.arraycopy(array, mid + 1, R, 0, n2);
+
+        int i = 0, j = 0, k = left;
+
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                array[k++] = L[i++];
+            } else {
+                array[k++] = R[j++];
+            }
+        }
+
+        while (i < n1) {
+            array[k++] = L[i++];
+        }
+
+        while (j < n2) {
+            array[k++] = R[j++];
+        }
+    }
+
+
+
 
     //creación de la funcion merge para combinar los vectores temporales
-    public static void merge(int[] v, int[] left, int[] right, int limLeft, int limRight) {
+    public static void merges(int[] v, int[] left, int[] right, int limLeft, int limRight) {
         int i = 0, j = 0, k = 0;
 
         while (i < limLeft && j < limRight) {

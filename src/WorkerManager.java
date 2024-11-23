@@ -41,7 +41,7 @@ public class WorkerManager implements Runnable {
                     public void run() {
                         switch (op) {
                             case 1:
-                                Sorter.mergeSort(array, array.length);
+                                Sorter.mergeSorts(array, array.length);
                                 break;
                             case 2:
                                 Sorter.quickSort(array);
