@@ -77,6 +77,7 @@ public class Client {
                 // Convertir la línea a número entero y agregarla a la lista
                 array.add(Integer.parseInt(linea));
             }
+            br.close();
             return array.stream().mapToInt(i -> i).toArray();
         } catch (IOException e) {
             System.out.println(e.getMessage());
