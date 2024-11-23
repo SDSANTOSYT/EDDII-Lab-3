@@ -52,23 +52,31 @@ public class Sorter {
 //        merges(v, left, right, mid, n - mid);
 //
 //    }
-    public static void mergeSort(int[] array, MergeSortState state) {
+    public static void mergeSort(int[] array, MergeSortState state, float maxTime) {
+        float startTime = System.currentTimeMillis();
         while (!state.stateStack.isEmpty()) {
-            CallState current = state.stateStack.pop();
+            if ((System.currentTimeMillis()-startTime)/1000.0==maxTime){
+                CallState current = state.stateStack.pop();
 
-            if (!current.mergeDone) {
-                if (current.left < current.right) {
-                    int mid = current.mid;
+                if (!current.mergeDone) {
+                    if (current.left < current.right) {
+                        int mid = current.mid;
 
-                    // Dividir: Agregar estados a la pila
-                    state.stateStack.push(new CallState(current.left, current.right, true)); // Para fusión
-                    state.stateStack.push(new CallState(mid + 1, current.right, false));     // Derecha
-                    state.stateStack.push(new CallState(current.left, mid, false));         // Izquierda
+                        // Dividir: Agregar estados a la pila
+                        state.stateStack.push(new CallState(current.left, current.right, true)); // Para fusión
+                        state.stateStack.push(new CallState(mid + 1, current.right, false));     // Derecha
+                        state.stateStack.push(new CallState(current.left, mid, false));         // Izquierda
+                    }
+                } else {
+                    // Fusionar las dos mitades
+                    merge(array, current.left, current.mid, current.right);
                 }
-            } else {
-                // Fusionar las dos mitades
-                merge(array, current.left, current.mid, current.right);
+
+
+            }else{
+                break;
             }
+
         }
     }
     // Método de fusión
