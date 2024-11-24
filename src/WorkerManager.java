@@ -51,16 +51,18 @@ public class WorkerManager implements Runnable {
 
             if (!this.state.isSorted) {
 
-                long startTime = System.currentTimeMillis();
+                long startTime = 0;
                 switch (state.sortingMethod) {
                     case 1:
-                        state.isSorted = Sorter.mergeSort(state.vector, state.mergeSortState, this.state.maxTime);
+                        startTime = System.currentTimeMillis();
+                        state.isSorted = Sorter.mergeSort(state.vector, state.mergeSortState, state.maxTime);
                         break;
                     case 2:
                         Sorter.quickSort(state.vector);
                         break;
                     case 3:
-                        Sorter.heapsort(state.vector);
+                        startTime = System.currentTimeMillis();
+                        state.isSorted = Sorter.heapSort(state.vector,state.heapSortState,state.maxTime);
                         break;
                     default:
                         System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
@@ -85,9 +87,9 @@ public class WorkerManager implements Runnable {
 
                     nextWorkerSocket.close();
                 } else {
+                    long endTime = System.currentTimeMillis();
                     Arrays.sort(startArray);
                     System.out.println(Sorter.didArrayChange(this.state.vector, startArray));
-                    long endTime = System.currentTimeMillis();
                     //System.out.println("Trabajador " + workerId + " - Completó el ordenamiento");
 
                     SortingResult sortingResult = new SortingResult(this.state.vector, workerId, (float) ((endTime - startTime) / 1000.0));
@@ -134,6 +136,7 @@ class SortingState implements Serializable {
     float maxTime;
     boolean isSorted;
     Sorter.MergeSortState mergeSortState;
+    Sorter.HeapSortState heapSortState;
 
     public SortingState(int[] vector, int sortingMethod, float maxTime) {
         this.vector = vector;
@@ -141,6 +144,7 @@ class SortingState implements Serializable {
         this.maxTime = maxTime;
         this.isSorted = false;
         mergeSortState = new Sorter.MergeSortState(this.vector.length);
+        heapSortState = new Sorter.HeapSortState();
     }
 
 }

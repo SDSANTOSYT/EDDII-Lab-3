@@ -5,21 +5,21 @@ public class Sorter {
 
     // Clase para representar el estado del algoritmo
     public static class MergeSortState implements Serializable {
-        Stack<CallState> stateStack; // Pila para simular la recursión
+        Stack<MergeCallState> stateStack; // Pila para simular la recursión
 
         public MergeSortState(int arrayLength) {
             this.stateStack = new Stack<>();
-            this.stateStack.push(new CallState(0, arrayLength - 1, false)); // Estado inicial
+            this.stateStack.push(new MergeCallState(0, arrayLength - 1, false)); // Estado inicial
         }
     }
 
     // Clase para representar una llamada en la pila
-    private static class CallState implements Serializable {
+    private static class MergeCallState implements Serializable {
         int left, right;
         boolean mergeDone;
         int mid;
 
-        public CallState(int left, int right, boolean mergeDone) {
+        public MergeCallState(int left, int right, boolean mergeDone) {
             this.left = left;
             this.right = right;
             this.mergeDone = mergeDone;
@@ -34,16 +34,16 @@ public class Sorter {
             if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
                 return false;
             } else {
-                CallState current = state.stateStack.pop();
+                MergeCallState current = state.stateStack.pop();
 
                 if (!current.mergeDone) {
                     if (current.left < current.right) {
                         int mid = current.mid;
 
                         // Dividir: Agregar estados a la pila
-                        state.stateStack.push(new CallState(current.left, current.right, true)); // Para fusión
-                        state.stateStack.push(new CallState(mid + 1, current.right, false));     // Derecha
-                        state.stateStack.push(new CallState(current.left, mid, false));         // Izquierda
+                        state.stateStack.push(new MergeCallState(current.left, current.right, true)); // Para fusión
+                        state.stateStack.push(new MergeCallState(mid + 1, current.right, false));     // Derecha
+                        state.stateStack.push(new MergeCallState(current.left, mid, false));         // Izquierda
                     }
                 } else {
                     // Fusionar las dos mitades
@@ -86,7 +86,7 @@ public class Sorter {
     }
 
     //HeapSort
-    static class HeapCallState{
+    private static class HeapCallState implements Serializable{
         int index; //Indice actual para heapify
         int size;   //Tamaño del heap
         boolean heapifyDone;    // La heapificacion esta completa?
@@ -97,7 +97,7 @@ public class Sorter {
           this.heapifyDone = heapifyDone;
         }
     }
-    static class HeapSortState{
+    public static class HeapSortState implements Serializable{
         Stack<HeapCallState> stateStack = new Stack<>();
     }
 
