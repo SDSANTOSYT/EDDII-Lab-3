@@ -62,13 +62,12 @@ public class WorkerManager implements Runnable {
                         break;
                     case 3:
                         startTime = System.currentTimeMillis();
-                        state.isSorted = Sorter.heapSort(state.vector,state.heapSortState,state.maxTime);
+                        state.isSorted = Sorter.heapSort(state.vector, state.heapSortState, state.maxTime);
                         break;
                     default:
                         System.out.println("Opcion fuera del menú: nunca deberás pasar por aqui");
                         break;
                 }
-
 
 
                 if (!state.isSorted) {
@@ -144,7 +143,7 @@ class SortingState implements Serializable {
         this.maxTime = maxTime;
         this.isSorted = false;
         mergeSortState = new Sorter.MergeSortState(this.vector.length);
-        heapSortState = new Sorter.HeapSortState();
+        heapSortState = new Sorter.HeapSortState(this.vector.length);
     }
 
 }

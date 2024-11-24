@@ -29,9 +29,9 @@ public class Sorter {
 
     //MergeSort
     public static boolean mergeSort(int[] array, MergeSortState state, float maxTime) {
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         while (!state.stateStack.isEmpty()) {
-            if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
+            if ((System.nanoTime() - startTime) >= maxTime * 1000000000L) {
                 return false;
             } else {
                 MergeCallState current = state.stateStack.pop();
@@ -86,76 +86,69 @@ public class Sorter {
     }
 
     //HeapSort
-    private static class HeapCallState implements Serializable{
+    private static class HeapCallState implements Serializable {
         int index; //Indice actual para heapify
         int size;   //Tamaño del heap
-        boolean heapifyDone;    // La heapificacion esta completa?
 
-        HeapCallState(int index, int size,  boolean heapifyDone) {
-          this.index = index;
-          this.size = size;
-          this.heapifyDone = heapifyDone;
+        HeapCallState(int index, int size) {
+            this.index = index;
+            this.size = size;
         }
     }
-    public static class HeapSortState implements Serializable{
+
+    public static class HeapSortState implements Serializable {
         Stack<HeapCallState> stateStack = new Stack<>();
+        boolean heapifyDone = false; // La heapificación esta completa?
+
+        public HeapSortState(int arrayLength) {
+            stateStack.push(new HeapCallState(arrayLength / 2 - 1, arrayLength));
+        }
+
     }
 
     public static boolean heapSort(int[] array, HeapSortState state, float maxTime) {
-       long startTime = System.currentTimeMillis();
-       int n = array.length;
+        long startTime = System.nanoTime();
+        int n = array.length;
 
-       for (int i = n/2 -1; i >= 0; i--) {
-           state.stateStack.push(new HeapCallState(i,n,false));
-       }
-
-       while (!state.stateStack.isEmpty()) {
-           if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
-               return false;
-           }else{
-               HeapCallState current = state.stateStack.pop();
-
-                   if(!current.heapifyDone){
-                       heapify(array, current.index, current.size);
-                       current.heapifyDone = true;
-                       state.stateStack.push(current);
-                   }
-               }
-           }
-       for (int i = n-1; i>0 ; i--) {
-           int temp = array[0];
-           array[0] = array[i];
-           array[i] = temp;
-
-           state.stateStack.push(new HeapCallState(0,i,false));
-           while(!state.stateStack.isEmpty()){
-               if((System.currentTimeMillis() - startTime) >= maxTime * 1000L){
-                   return false;
-               }else{
-                   HeapCallState current = state.stateStack.pop();
-                   if(!current.heapifyDone){
-                       heapify(array, current.index, current.size);
-                       current.heapifyDone = true;
-                       state.stateStack.push(current);
-                   }
-               }
-           }
-       }
-       return true;
+        while (!state.stateStack.isEmpty()) {
+            if ((System.nanoTime() - startTime) >= maxTime * 1000000000L) {
+                return false;
+            } else {
+                HeapCallState current = state.stateStack.pop();
+                if (!state.heapifyDone) {
+                    heapify(array, current.index, current.size);
+                    if (current.index-- > 0) {
+                        state.stateStack.push(new HeapCallState(current.index--, n));
+                    } else {
+                        state.heapifyDone = true;
+                        state.stateStack.push(new HeapCallState(0, n - 1));
+                    }
+                } else {
+                    int temp = array[0];
+                    array[0] = array[current.size];
+                    array[current.size] = temp;
+                    heapify(array, current.index, current.size);
+                    if (current.size-- > 0) {
+                        state.stateStack.push(new HeapCallState(0, current.size--));
+                    }
+                }
+            }
+        }
+        return true;
     }
 
-    public static void heapify(int[] array, int root, int heapSize){
+    public static void heapify(int[] array, int root, int heapSize) {
         int largest = root;
         int left = 2 * root + 1;
         int right = 2 * root + 2;
 
-        if(left < heapSize && array[left] > array[largest]){
+        if (left < heapSize && array[left] > array[largest]) {
             largest = left;
         }
-        if(right < heapSize && array[right] > array[largest]){
+        if (right < heapSize && array[right] > array[largest]) {
             largest = right;
         }
-        if(largest != root){
+        if (largest != root) {
             int temp = array[root];
             array[root] = array[largest];
             array[largest] = temp;
@@ -173,25 +166,25 @@ public class Sorter {
         //Itera sobre los elementos de la sublista
         for (int j = low; j < high; j++) {
             if (v[j] <= pivot) {
-                //Si el elemento actual es menor o igual al pivote, incremento el indice menor
+                //Si el elemento actual es menor o igual al pivote, incremento el índice menor
                 i++;
-                //Intercambia el elemento actual con el elemento en la posicion i
+                //Intercambia el elemento actual con el elemento en la posición i
                 int temp = v[i];
                 v[i] = v[j];
                 v[j] = temp;
             }
         }
-        //Pivote en la posicion correcta :D
+        //Pivote en la posición correcta :D
         int temp = v[i + 1];
         v[i + 1] = v[high];
         v[high] = temp;
-        return i + 1; //Posicion final del pivote
+        return i + 1; //Posición final del pivote
 
     }
 
     public static void Aux(int[] v, int low, int high) {
         if (low < high) {
-            //Verifica si la posicion del array tiene mas de un elemento
+            //Verifica si la posición del array tiene más de un elemento
             int pivot = partition(v, low, high);
             Aux(v, low, pivot - 1);
             Aux(v, pivot + 1, high);
