@@ -101,18 +101,21 @@ public class Sorter {
     }
     static class HeapSortState{
         Stack<HeapCallState> stateStack = new Stack<>();
+
         HeapSortState(int arrayLength) {
             for(int i = arrayLength / 2 - 1; i>=0; i--){
                 stateStack.push(new HeapCallState(i,arrayLength,false,false));
-            }
-            for (int i = arrayLength - 1; i > 0; i--) {
-                stateStack.push(new HeapCallState(0,i+1,true,false));
             }
         }
     }
 
     public static boolean heapSort(int[] array, HeapSortState state, float maxTime) {
        long startTime = System.currentTimeMillis();
+       int n = array.length;
+
+       for (int i = n-1; i > 0; i--) {
+           state.stateStack.push(new HeapCallState(0,i+1,true,false));
+       }
 
        while (!state.stateStack.isEmpty()) {
            if ((System.currentTimeMillis() - startTime) >= maxTime * 1000L) {
@@ -128,11 +131,13 @@ public class Sorter {
 
                        heapify(array,0,finalIndex);
                        current.heapifyDone = true;
+                       state.stateStack.push(current);
                    }
                }else{
                    if (!current.heapifyDone) {
                        heapify(array, current.index, current.size);
                        current.heapifyDone = true;
+                       state.stateStack.push(current);
                    }
                }
            }
