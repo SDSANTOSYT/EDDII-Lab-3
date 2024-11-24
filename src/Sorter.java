@@ -89,32 +89,24 @@ public class Sorter {
     static class HeapCallState{
         int index; //Indice actual para heapify
         int size;   //Tamaño del heap
-        boolean isExtractionPhase;  //Estamos en fase de extraccion?
         boolean heapifyDone;    // La heapificacion esta completa?
 
-        HeapCallState(int index, int size, boolean isExtractionPhase, boolean heapifyDone) {
+        HeapCallState(int index, int size,  boolean heapifyDone) {
           this.index = index;
           this.size = size;
-          this.isExtractionPhase = isExtractionPhase;
           this.heapifyDone = heapifyDone;
         }
     }
     static class HeapSortState{
         Stack<HeapCallState> stateStack = new Stack<>();
-
-        HeapSortState(int arrayLength) {
-            for(int i = arrayLength / 2 - 1; i>=0; i--){
-                stateStack.push(new HeapCallState(i,arrayLength,false,false));
-            }
-        }
     }
 
     public static boolean heapSort(int[] array, HeapSortState state, float maxTime) {
        long startTime = System.currentTimeMillis();
        int n = array.length;
 
-       for (int i = n-1; i > 0; i--) {
-           state.stateStack.push(new HeapCallState(0,i+1,true,false));
+       for (int i = n/2 -1; i >= 0; i--) {
+           state.stateStack.push(new HeapCallState(i,n,false));
        }
 
        while (!state.stateStack.isEmpty()) {
@@ -122,19 +114,26 @@ public class Sorter {
                return false;
            }else{
                HeapCallState current = state.stateStack.pop();
-               if (current.isExtractionPhase) {
-                   if(!current.heapifyDone){
-                       int finalIndex = current.size -1;
-                       int temp = array[0];
-                       array[0] = array[finalIndex];
-                       array[finalIndex] = temp;
 
-                       heapify(array,0,finalIndex);
+                   if(!current.heapifyDone){
+                       heapify(array, current.index, current.size);
                        current.heapifyDone = true;
                        state.stateStack.push(current);
                    }
+               }
+           }
+       for (int i = n-1; i>0 ; i--) {
+           int temp = array[0];
+           array[0] = array[i];
+           array[i] = temp;
+
+           state.stateStack.push(new HeapCallState(0,i,false));
+           while(!state.stateStack.isEmpty()){
+               if((System.currentTimeMillis() - startTime) >= maxTime * 1000L){
+                   return false;
                }else{
-                   if (!current.heapifyDone) {
+                   HeapCallState current = state.stateStack.pop();
+                   if(!current.heapifyDone){
                        heapify(array, current.index, current.size);
                        current.heapifyDone = true;
                        state.stateStack.push(current);
