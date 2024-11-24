@@ -58,7 +58,8 @@ public class WorkerManager implements Runnable {
                         state.isSorted = Sorter.mergeSort(state.vector, state.mergeSortState, state.maxTime);
                         break;
                     case 2:
-                        Sorter.quickSort(state.vector);
+                        startTime = System.currentTimeMillis();
+                        state.isSorted = Sorter.quickSort(state.vector,state.quickSortState, state.maxTime);
                         break;
                     case 3:
                         startTime = System.currentTimeMillis();
@@ -136,6 +137,7 @@ class SortingState implements Serializable {
     boolean isSorted;
     Sorter.MergeSortState mergeSortState;
     Sorter.HeapSortState heapSortState;
+    Sorter.QuickSortState quickSortState;
 
     public SortingState(int[] vector, int sortingMethod, float maxTime) {
         this.vector = vector;
@@ -144,6 +146,7 @@ class SortingState implements Serializable {
         this.isSorted = false;
         mergeSortState = new Sorter.MergeSortState(this.vector.length);
         heapSortState = new Sorter.HeapSortState(this.vector.length);
+        quickSortState = new Sorter.QuickSortState(this.vector.length);
     }
 
 }

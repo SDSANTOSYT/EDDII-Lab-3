@@ -158,42 +158,64 @@ public class Sorter {
     }
 
     //QuickSort
-    private static int partition(int[] v, int low, int high) {
-        //Ultimo elemento como pivote
-        int pivot = v[high];
-        int i = low - 1;
+    public static class QuickSortState implements Serializable {
+        Stack<QuickSortCallState> stateStack;
 
-        //Itera sobre los elementos de la sublista
-        for (int j = low; j < high; j++) {
-            if (v[j] <= pivot) {
-                //Si el elemento actual es menor o igual al pivote, incremento el índice menor
-                i++;
-                //Intercambia el elemento actual con el elemento en la posición i
-                int temp = v[i];
-                v[i] = v[j];
-                v[j] = temp;
+        public QuickSortState(int n) {
+            this.stateStack = new Stack<>();
+            stateStack.push(new QuickSortCallState(0,n- 1));
+        }
+    }
+
+    private static class QuickSortCallState implements Serializable {
+        int left, right;
+
+        public QuickSortCallState(int left, int right) {
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    public static boolean quickSort(int[] array, QuickSortState state, float maxTime) {
+        long startTime = System.nanoTime();
+
+        while (!state.stateStack.isEmpty()) {
+            if ((System.nanoTime() - startTime) >= maxTime * 1000000000L) {
+                return false;
+            }else{
+                QuickSortCallState current = state.stateStack.pop();
+                int left = current.left;
+                int right = current.right;
+
+                if (left < right) {
+                    int pivotIndex = partition(array,left,right);
+                    state.stateStack.push(new QuickSortCallState(left, pivotIndex - 1));
+                    state.stateStack.push(new QuickSortCallState(pivotIndex + 1, right));
+                }
             }
         }
-        //Pivote en la posición correcta :D
-        int temp = v[i + 1];
-        v[i + 1] = v[high];
-        v[high] = temp;
-        return i + 1; //Posición final del pivote
-
+        return true;
     }
+    private static int partition(int[] array, int left, int right) {
+        int pivot = array[right];
+        int i = left - 1;
 
-    public static void Aux(int[] v, int low, int high) {
-        if (low < high) {
-            //Verifica si la posición del array tiene más de un elemento
-            int pivot = partition(v, low, high);
-            Aux(v, low, pivot - 1);
-            Aux(v, pivot + 1, high);
+        for(int j = left; j< right; j++) {
+            if (array[j] <= pivot) {
+                i++;
+                swap(array,i,j);
+            }
         }
+        swap(array, i+1, right);
+        return i+1;
     }
 
-    public static void quickSort(int[] v) {
-        Aux(v, 0, v.length - 1);
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
+
 
     public static boolean didArrayChange(int[] v1, int[] v2) {
         for (int i = 0; i < v1.length; i++) {
