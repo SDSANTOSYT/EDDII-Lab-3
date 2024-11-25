@@ -42,7 +42,7 @@ public class Sorter {
 
                         // Dividir: Agregar estados a la pila
                         state.stateStack.push(new MergeCallState(current.left, current.right, true)); // Para fusión
-                        state.stateStack.push(new MergeCallState(mid + 1, current.right, false));     // Derecha
+                        state.stateStack.push(new MergeCallState(mid + 1, current.right, false)); // Derecha
                         state.stateStack.push(new MergeCallState(current.left, mid, false));         // Izquierda
                     }
                 } else {
@@ -57,31 +57,36 @@ public class Sorter {
 
     // Método de fusión
     private static void merge(int[] array, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
+        //Calcular el tamaño de los subarrays
+        int n1 = mid - left + 1;    //Tamaño del subrray izquierdo
+        int n2 = right - mid;   //Tamaño del subrray derecho
 
-        int[] L = new int[n1];
-        int[] R = new int[n2];
+        //Crear array's temporales para almacenar los elementos de los subarrays
+        int[] L = new int[n1];  //Subarray izquierdo
+        int[] R = new int[n2];  //Subarray derecho
 
-        System.arraycopy(array, left, L, 0, n1);
-        System.arraycopy(array, mid + 1, R, 0, n2);
+        //Copiar los elementos del array original a los subarrays temporales
+        System.arraycopy(array, left, L, 0, n1);    //Copiar el subarray izquierdo
+        System.arraycopy(array, mid + 1, R, 0, n2); //Copiar el subarray derecho
 
+        //Inicializar indices para recorrer los subarrays y el array original
         int i = 0, j = 0, k = left;
-
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                array[k++] = L[i++];
+        //Fusionar los subarrays en el array original
+        while (i < n1 && j < n2) {//Mientras haya elementos en ambos subarrays
+            if (L[i] <= R[j]) {//Comparar los elementos actuales de L y R
+                array[k++] = L[i++]; //Si L[i] es menor o igual, agregarlo al array original
             } else {
-                array[k++] = R[j++];
+                array[k++] = R[j++];// Si R[j] es menor, agregarlo al array original
             }
         }
-
+        //Copiar los elementos restantes del subarray izquierdo, si los hay
         while (i < n1) {
-            array[k++] = L[i++];
+            array[k++] = L[i++]; //Agregar los elementos restante de L al array original
         }
 
+        //Copiar los elementos restante del subarray derecho, si los hay
         while (j < n2) {
-            array[k++] = R[j++];
+            array[k++] = R[j++];//Agregar los elementos restantes de R al array original
         }
     }
 
@@ -252,7 +257,7 @@ public class Sorter {
         array[j] = temp; //Asigna el valor temporal a array [j]
     }
 
-
+    //Verificar si el array realmente se ordeno
     public static boolean didArrayChange(int[] v1, int[] v2) {
         for (int i = 0; i < v1.length; i++) {
             if (v2[i] != v1[i]) {
