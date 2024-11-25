@@ -9,16 +9,25 @@ public class Client {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         try {
-
             // Se lee el vector desde el txt
             int[] array = readArray("src\\vector.txt");
-            // Se lee el tiempo maximo para la ejecución del ordenamiento
-            System.out.println("Ingresa el tiempo maximo para ordenar el vector");
-            float maxTime = input.nextFloat();
-            int op = 0;
 
+            System.out.println("=====================================================");
+            // Se lee el tiempo máximo para la ejecución del ordenamiento
+            float maxTime = -1;
+            while (maxTime <= 0) {
+                try {
+                    System.out.println("Ingresa el tiempo máximo para ordenar el vector");
+                    maxTime = input.nextFloat();
+                } catch (Exception e) {
+                    maxTime = -1;
+                }
+            }
+            // Se lee la opción para el método de ordenamiento
+            int op = 0;
             while (op > 3 || op < 1) {
                 try {
+                    System.out.println("=====================================================");
                     System.out.println("Ingrese como quiere organizar el vector\n MergeSort (1), QuickSort (2) HeapSort (3)");
                     op = input.nextInt();
 
@@ -28,21 +37,18 @@ public class Client {
 
             }
 
-
             // Se crea la conexión con el socket del worker#0
             Socket socket = new Socket("localhost", 5000);
 
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-            out.writeObject(array); // se envia el vector
-            out.writeInt(op);//Se envia la opción
-            out.writeFloat(maxTime); // se envia el tiempo limite para resolver el problema
-            out.writeBoolean(false); // se envia un booleano que indica el estado del vector
+            out.writeObject(array); // se envía el vector
+            out.writeInt(op);//Se envía la opción
+            out.writeFloat(maxTime); // se envía el tiempo límite para resolver el problema
             out.flush();
 
             System.out.println("Vector enviado al Trabajador #0");
-
-            socket.close();
+            socket.close(); // Se cierra la conexión con el worker0
 
             // En esta fase el cliente pasa a ser un servidor que espera las respuestas de los workers
             ServerSocket server = new ServerSocket(5002);
@@ -56,8 +62,12 @@ public class Client {
                 } else if (object instanceof SortingResult) {
                     // Si el objeto es el resultado del ordenamiento, se guarda el vector en un archivo y se muestra el tiempo de ejecución
                     SortingResult results = (SortingResult) object;
-                    writeArray("vectorOrdenado.txt", results.vector);
-                    System.out.println("El vector fue ordenado por el trabajador #" + results.workerId + " en " + results.lasted + " segundos");
+                    String fileName = "vectorOrdenado.txt";
+                    writeArray(fileName, results.vector);
+                    System.out.println("=====================================================");
+                    System.out.println("El vector fue ordenado por el trabajador #" + results.workerId + " en " + results.workerLasted + " segundos");
+                    System.out.println("Tiempo total para realizar el ordenamiento fue de:  " + results.totalLasted + " segundos");
+                    System.out.println("El vector se guardó en el archivo: \"" + fileName + "\"");
                     break;
                 }
             }

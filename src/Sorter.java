@@ -86,6 +86,8 @@ public class Sorter {
     }
 
     //HeapSort
+
+    // Clase que es un estado del HeapSort
     private static class HeapCallState implements Serializable {
         int index; //Indice actual para heapify
         int size;   //Tamaño del heap
@@ -96,6 +98,7 @@ public class Sorter {
         }
     }
 
+    // Clase que guarda los estados del HeapSort
     public static class HeapSortState implements Serializable {
         Stack<HeapCallState> stateStack = new Stack<>();
         boolean heapifyDone = false; // La heapificación esta completa?
@@ -106,6 +109,7 @@ public class Sorter {
 
     }
 
+    // Método de ordenamiento HeapSort
     public static boolean heapSort(int[] array, HeapSortState state, float maxTime) {
         long startTime = System.nanoTime();
         int n = array.length;
@@ -137,6 +141,7 @@ public class Sorter {
         return true;
     }
 
+    // Método Heapify para el HeapSort
     public static void heapify(int[] array, int root, int heapSize) {
         int largest = root;
         int left = 2 * root + 1;
@@ -163,7 +168,7 @@ public class Sorter {
 
         public QuickSortState(int n) {
             this.stateStack = new Stack<>();
-            stateStack.push(new QuickSortCallState(0,n- 1));
+            stateStack.push(new QuickSortCallState(0, n - 1));
         }
     }
 
@@ -182,13 +187,13 @@ public class Sorter {
         while (!state.stateStack.isEmpty()) {
             if ((System.nanoTime() - startTime) >= maxTime * 1000000000L) {
                 return false;
-            }else{
+            } else {
                 QuickSortCallState current = state.stateStack.pop();
                 int left = current.left;
                 int right = current.right;
 
                 if (left < right) {
-                    int pivotIndex = partition(array,left,right);
+                    int pivotIndex = partition(array, left, right);
                     state.stateStack.push(new QuickSortCallState(left, pivotIndex - 1));
                     state.stateStack.push(new QuickSortCallState(pivotIndex + 1, right));
                 }
@@ -196,18 +201,19 @@ public class Sorter {
         }
         return true;
     }
+
     private static int partition(int[] array, int left, int right) {
         int pivot = array[right];
         int i = left - 1;
 
-        for(int j = left; j< right; j++) {
+        for (int j = left; j < right; j++) {
             if (array[j] <= pivot) {
                 i++;
-                swap(array,i,j);
+                swap(array, i, j);
             }
         }
-        swap(array, i+1, right);
-        return i+1;
+        swap(array, i + 1, right);
+        return i + 1;
     }
 
     private static void swap(int[] array, int i, int j) {
