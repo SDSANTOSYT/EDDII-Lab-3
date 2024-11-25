@@ -256,14 +256,4 @@ public class Sorter {
         array[i] = array[j];//Asigna el valor de array[j] a array[i]
         array[j] = temp; //Asigna el valor temporal a array [j]
     }
-
-    //Verificar si el array realmente se ordeno
-    public static boolean didArrayChange(int[] v1, int[] v2) {
-        for (int i = 0; i < v1.length; i++) {
-            if (v2[i] != v1[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
